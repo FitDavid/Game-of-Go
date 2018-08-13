@@ -6,7 +6,7 @@ class Board
 {
     public:
 
-
+        typedef enum _mouse{UP,DOWN} MouseButton;
 
         typedef enum _stonetype {EMPTY, BLACK, WHITE} Stone;
 
@@ -36,6 +36,7 @@ class Board
         Point *point1D;
         Point **point;
         Stone turn;
+        MouseButton mouse;
 
 
 };

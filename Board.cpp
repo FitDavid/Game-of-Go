@@ -4,7 +4,8 @@ Board::Board():
     boardSize(19),
     point1D(NULL),
     point(NULL),
-    turn(BLACK)
+    turn(BLACK),
+    mouse(UP)
 {
     point1D = new Point[boardSize*boardSize];
     point = new Point*[boardSize];

@@ -2,7 +2,6 @@
 
 BoardTextures::BoardTextures(SDL_Renderer *const renderer):
     renderer(renderer),
-    mouse(UP),
     boardSurface(NULL),
     boardTexture(NULL),
     bStoneSurface(NULL),

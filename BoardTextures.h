@@ -5,7 +5,7 @@
 
 class BoardTextures
 {
-    typedef enum _mouse{UP,DOWN} MouseButton;
+
 
     public:
         BoardTextures(SDL_Renderer *const renderer);
@@ -16,7 +16,7 @@ class BoardTextures
 
     private:
         SDL_Renderer *const renderer;
-        MouseButton mouse;
+
         SDL_Surface *boardSurface;
         SDL_Texture *boardTexture;
         SDL_Surface *bStoneSurface;
