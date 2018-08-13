@@ -1,0 +1,7 @@
+*.png
+*.xcf
+Go_v0.cbp
+Go_v0.depend
+Go_v0.layout
+bin/
+obj/
