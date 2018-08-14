@@ -34,14 +34,14 @@ class Board
                 return false;
             }
 
-        int getBoardSize() { return boardSize; }
+        unsigned getBoardSize() { return boardSize; }
 
         const Point *const *const getBoard() {return board;}
 
     protected:
 
     private:
-        int boardSize;
+        unsigned boardSize;
         Point *points1D;
         Point **board;
         Stone turn;

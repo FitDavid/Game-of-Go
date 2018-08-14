@@ -10,7 +10,8 @@ class BoardTextures
     public:
         BoardTextures(SDL_Renderer *const renderer);
         ~BoardTextures();
-        void render();
+        void render(unsigned);
+        void renderBlankBoard();
 
     protected:
 
