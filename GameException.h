@@ -1,6 +1,5 @@
 #ifndef GAMEEXCEPTION_H
 #define GAMEEXCEPTION_H
-#include <string>
 #include <exception>
 
 

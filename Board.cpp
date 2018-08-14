@@ -40,6 +40,16 @@ void Board::newBoard()
 void Board::handleEvents(const SDL_Event& event)
 {
 
+    switch(event.type)
+    {
+        case SDL_MOUSEMOTION:
+            {
+                col = event.motion.x / boardSize;
+                row = event.motion.y / boardSize;
+                if(isInRange(col, row) && point[col][row].stone == EMPTY)
+                    point[col][row].isTransparent = true;
+            }
+    }
 }
 
 

@@ -27,7 +27,12 @@ class Board
 
         void handleEvents(const SDL_Event& event);
 
-
+        bool isInRange(int col, int row = 0)
+            {
+                if(col >= 0 && col < boardSize && row >= 0 && row < boardSize)
+                    return true;
+                return false;
+            }
 
     protected:
 
