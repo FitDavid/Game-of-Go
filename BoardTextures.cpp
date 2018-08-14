@@ -53,6 +53,7 @@ void BoardTextures::render()
     SDL_RenderClear(renderer);
     SDL_Rect dst = {0, 0, boardTexSize, boardTexSize};
     SDL_RenderCopy(renderer, boardTexture, NULL, &dst);
-
+    int i, j;
+    for(i = 0, j = 0; ;)
     SDL_RenderPresent(renderer);
 }

@@ -2,22 +2,22 @@
 
 Board::Board():
     boardSize(19),
-    point1D(NULL),
-    point(NULL),
+    points1D(NULL),
+    board(NULL),
     turn(BLACK),
     mouse(UP)
 {
-    point1D = new Point[boardSize*boardSize];
-    point = new Point*[boardSize];
+    points1D = new Point[boardSize*boardSize];
+    board = new Point*[boardSize];
     for(int i = 0; i < boardSize; i++)
-        point[i] = point1D + i*boardSize;
+        board[i] = points1D + i*boardSize;
     newBoard();
 }
 
 Board::~Board()
 {
-    delete[] point;
-    delete[] point1D;
+    delete[] board;
+    delete[] points1D;
 
 }
 
@@ -28,10 +28,10 @@ void Board::newBoard()
     {
         for(j = 0; j < boardSize; j++)
         {
-            point[i][j].x = i*25;
-            point[i][j].y = j*25;
-            point[i][j].isTransparent = false;
-            point[i][j].stone = EMPTY;
+            board[i][j].x = i*25;
+            board[i][j].y = j*25;
+            board[i][j].isTransparent = false;
+            board[i][j].stone = EMPTY;
         }
     }
 
@@ -46,8 +46,8 @@ void Board::handleEvents(const SDL_Event& event)
             {
                 int col = event.motion.x / boardSize;
                 int row = event.motion.y / boardSize;
-                if(isInRange(col, row) && point[col][row].stone == EMPTY)
-                    point[col][row].isTransparent = true;
+                if(isInRange(col, row) && board[col][row].stone == EMPTY)
+                    board[col][row].isTransparent = true;
             }
     }
 }

@@ -34,12 +34,16 @@ class Board
                 return false;
             }
 
+        int getBoardSize() { return boardSize; }
+
+        const Point *const *const getBoard() {return board;}
+
     protected:
 
     private:
         int boardSize;
-        Point *point1D;
-        Point **point;
+        Point *points1D;
+        Point **board;
         Stone turn;
         MouseButton mouse;
 
