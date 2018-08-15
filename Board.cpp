@@ -4,7 +4,8 @@ Board::Board():
     boardSize(19),
     points1D(NULL),
     board(NULL),
-    turn(BLACK)
+    turn(BLACK),
+    mouseButtonDown(false)
 {
     points1D = new Point[boardSize*boardSize];
     board = new Point*[boardSize];
@@ -48,6 +49,7 @@ void Board::handleEvents(const SDL_Event& event, int stoneTexSize)
                 int row = y / stoneTexSize;
                 if(isInRange(col, row))
                     {
+                        mouseButtonDown = true;
                         lastButtonDown.col = col;
                         lastButtonDown.row = row;
                     }
@@ -55,32 +57,73 @@ void Board::handleEvents(const SDL_Event& event, int stoneTexSize)
             break;
         case SDL_MOUSEBUTTONUP:
             {
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-                int col = x / stoneTexSize;
-                int row = y / stoneTexSize;
-                Position pos = {col, row};
-                //if square is empty and mouse is still in the square and move is legal
-                if(board[col][row].stone == EMPTY &&
-                   pos.col == lastButtonDown.col &&
-                   pos.row == lastButtonDown.row &&
-                   isLegal(pos))
+                if(mouseButtonDown)
                 {
-                    board[col][row].stone = turn;
-                    if(turn == BLACK) turn = WHITE;
-                    else if(turn == WHITE) turn = BLACK;
+                    int x, y;
+                    SDL_GetMouseState(&x, &y);
+                    int col = x / stoneTexSize;
+                    int row = y / stoneTexSize;
+                    Position pos = {col, row};
+                    //if mouse is still in the square
+                    if(pos.col == lastButtonDown.col && pos.row == lastButtonDown.row)
+                        putStone(pos);
                 }
             }
+            break;
+    }
+}
+
+void Board::putStone(Position pos)
+{
+    if(board[pos.col][pos.row].stone == EMPTY && isLegal(pos))
+    {
+        board[pos.col][pos.row].stone = turn;
+        if(turn == BLACK) turn = WHITE;
+        else if(turn == WHITE) turn = BLACK;
     }
 }
 
 bool Board::isLegal(Position pos)
 {
-
-    return true;
+    if(board[pos.col][pos.row].stone == EMPTY)
+    {
+        Position posR = {pos.col +1, pos.row};
+        if(isInRange(posR))
+        {
+            if(board[posR.col][posR.row].stone == EMPTY)
+                return true;
+            else if(isGonnaDie(posR))
+                return true;
+        }
+        Position posL = {pos.col - 1, pos.row};
+        if(isInRange(posL))
+        {
+            if(board[posL.col][posL.row].stone == EMPTY)
+                return true;
+            else if(isGonnaDie(posL))
+                return true;
+        }
+        Position posD = {pos.col, pos.row + 1};
+        if(isInRange(posD))
+        {
+            if(board[posD.col][posD.row].stone == EMPTY)
+                return true;
+            else if(isGonnaDie(posD))
+                return true;
+        }
+        Position posU = {pos.col, pos.row - 1};
+        if(isInRange(posU))
+        {
+            if(board[posU.col][posU.row].stone == EMPTY)
+                return true;
+            else if(isGonnaDie(posU))
+                return true;
+        }
+    }
+    return false;
 }
 
-bool Board::isGonnaDie(Position pos) //should throw ecseption if board is in illegal state
+bool Board::isGonnaDie(Position pos) //should throw exception if board is in illegal state
 {
     return true;
 }

@@ -25,9 +25,18 @@ class Board
                 return false;
             }
 
+        bool isInRange(Position pos)
+            {
+                if(pos.col >= 0 && pos.col < boardSize && pos.row >= 0 && pos.row < boardSize)
+                    return true;
+                return false;
+            }
+
         bool isLegal(Position pos);
 
         bool isGonnaDie(Position pos);
+
+        void putStone(Position pos);
 
         unsigned getBoardSize() const { return boardSize; }
 
@@ -43,6 +52,7 @@ class Board
         Point **board;
         Stone turn;
         Position lastButtonDown;
+        bool mouseButtonDown;
 
 
 };
