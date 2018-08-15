@@ -41,13 +41,7 @@ void Board::handleEvents(const SDL_Event& event)
 
     switch(event.type)
     {
-        case SDL_MOUSEMOTION:
-            {
-                int col = event.motion.x / boardSize;
-                int row = event.motion.y / boardSize;
-                if(isInRange(col, row) && board[col][row].stone == EMPTY)
-                    ;
-            }
+        break;
     }
 }
 

@@ -37,6 +37,7 @@ BoardTextures::BoardTextures(SDL_Renderer *const renderer):
 
     renderBlankBoard();
     SDL_RenderPresent(renderer);
+    return;
 }
 
 BoardTextures::~BoardTextures()
@@ -48,20 +49,20 @@ BoardTextures::~BoardTextures()
 
 }
 
-void BoardTextures::renderBoard(const Board& board)
+void BoardTextures::render(const Board& board)
 {
     renderBlankBoard();
-    unsigned i, j;
     SDL_Rect dst;
     dst.w = dst.h = stoneTexSize;
     const Point * const * const boardPointer = board.getBoard();
+    unsigned i, j;
     for(i = 0, j = 0; i < board.getBoardSize(); i++)
         for(j = 0; j < board.getBoardSize(); j++)
     {
-        if(board.getBoard()[i][j].stone != EMPTY)
+        if(boardPointer[i][j].stone != EMPTY)
             dst.x = boardPointer[i][j].x;
             dst.y = boardPointer[i][j].y;
-            if(board.getBoard()[i][j].stone != BLACK)
+            if(boardPointer[i][j].stone == BLACK)
             {
                 SDL_RenderCopy(renderer, bStoneTexture, NULL, &dst);
             }
@@ -70,26 +71,11 @@ void BoardTextures::renderBoard(const Board& board)
                 SDL_RenderCopy(renderer, wStoneTexture, NULL, &dst);
             }
     }
-    renderMousePointer(board);
-}
-
-void BoardTextures::renderBlankBoard()
-{
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(renderer);
-    SDL_Rect dst = {0, 0, boardTexSize, boardTexSize};
-    SDL_RenderCopy(renderer, boardTexture, NULL, &dst);
-}
-
-void BoardTextures::renderMousePointer(const Board& board)
-{
-    SDL_Rect dst;
+    //Rendering mouse pointer
     int x, y;
     SDL_GetMouseState(&x, &y);
-    dst.x = (int)x * stoneTexSize;
-    dst.y = (int)y * stoneTexSize;
-    dst.w = stoneTexSize;
-    dst.h = stoneTexSize;
+    dst.x = x / stoneTexSize * stoneTexSize;
+    dst.y = y / stoneTexSize * stoneTexSize;
     if(board.getTurn() == BLACK)
         {
             SDL_SetTextureAlphaMod(bStoneTexture, 0x80);
@@ -102,5 +88,14 @@ void BoardTextures::renderMousePointer(const Board& board)
             SDL_RenderCopy(renderer, wStoneTexture, NULL, &dst);
             SDL_SetTextureAlphaMod(wStoneTexture, 0xFF);
         }
+    SDL_RenderPresent(renderer);
+}
+
+void BoardTextures::renderBlankBoard()
+{
+    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(renderer);
+    SDL_Rect dst = {0, 0, boardTexSize, boardTexSize};
+    SDL_RenderCopy(renderer, boardTexture, NULL, &dst);
 }
 

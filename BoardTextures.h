@@ -10,9 +10,8 @@ class BoardTextures
     public:
         BoardTextures(SDL_Renderer *const renderer);
         ~BoardTextures();
-        void renderBoard(const Board& board);
+        void render(const Board& board);
         void renderBlankBoard();
-        void renderMousePointer(const Board& board);
 
     protected:
 

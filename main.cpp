@@ -21,10 +21,12 @@ int main(int argc, char *args[])
             while(SDL_PollEvent(&event) > 0)
             {
                 if(event.type == SDL_QUIT) quit = true;
-                board.handleEvents(event);
-
+                else
+                {
+                    board.handleEvents(event);
+                    boardTex.render(board);
+                }
             }
-            boardTex.renderBoard(board);
         }
     }
     catch(const std::exception& exc)
@@ -39,6 +41,4 @@ int main(int argc, char *args[])
     {
         std::cout <<  "Unknown exception." << std::endl;
     }
-
-
 }
