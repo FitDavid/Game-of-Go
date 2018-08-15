@@ -1,12 +1,22 @@
 #ifndef BOARD_H
 #define BOARD_H
 #include "Game.h"
+#include <vector>
+#include <algorithm>
 
 class Board
 {
     public:
 
-        typedef struct _position {int col; int row; } Position;
+        class Position
+        {
+        public:
+            int col;
+            int row;
+            Position():col(0), row(0) {}
+            Position(int c, int r):col(c), row(r) {}
+            bool operator==(Position pos) {return (this->col == pos.col) && (this->row == pos.row);}
+        };
 
         Board();
 
@@ -32,29 +42,37 @@ class Board
                 return false;
             }
 
-        bool isLegal(Position pos);
+        bool putStone(Position pos);
 
-        bool isGonnaDie(Position pos);
+        void removeDeadGroup(Position pos);
 
-        void putStone(Position pos);
+        bool isDead(Position pos, bool opposite);
+
+        Stone oppositeTurn()
+        {
+            if(turn == BLACK) return WHITE;
+            else if(turn == WHITE) return BLACK;
+            throw GameException("Invalid turn.");
+        }
+
+        Stone getTurn() const {return turn;}
 
         unsigned getBoardSize() const { return boardSize; }
 
         const Point *const *const getBoard() const {return board;}
 
-        Stone getTurn() const {return turn;}
-
     protected:
 
     private:
-        unsigned boardSize;
+        int boardSize;
         Point *points1D;
         Point **board;
         Stone turn;
         Position lastButtonDown;
         bool mouseButtonDown;
-
-
+        std::vector<Position> path;
+        unsigned bPrisoner;
+        unsigned wPrisoner;
 };
 
 #endif // BOARD_H
