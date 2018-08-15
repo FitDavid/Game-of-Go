@@ -23,7 +23,7 @@ int main(int argc, char *args[])
                 if(event.type == SDL_QUIT) quit = true;
                 else
                 {
-                    board.handleEvents(event);
+                    board.handleEvents(event, boardTex.getStoneTexSize() );
                     boardTex.render(board);
                 }
             }

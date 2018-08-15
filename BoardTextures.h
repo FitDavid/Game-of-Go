@@ -5,13 +5,12 @@
 
 class BoardTextures
 {
-
-
     public:
         BoardTextures(SDL_Renderer *const renderer);
         ~BoardTextures();
         void render(const Board& board);
         void renderBlankBoard();
+        int getStoneTexSize() {return stoneTexSize;}
 
     protected:
 

@@ -6,7 +6,7 @@ class Board
 {
     public:
 
-        typedef enum _mouse{UP,DOWN} MouseButton;
+        typedef struct _position {int col; int row; } Position;
 
         Board();
 
@@ -16,7 +16,7 @@ class Board
 
         void newBoard();
 
-        void handleEvents(const SDL_Event& event);
+        void handleEvents(const SDL_Event& event, int stoneTexSize);
 
         bool isInRange(int col, int row = 0)
             {
@@ -24,6 +24,10 @@ class Board
                     return true;
                 return false;
             }
+
+        bool isLegal(Position pos);
+
+        bool isGonnaDie(Position pos);
 
         unsigned getBoardSize() const { return boardSize; }
 
@@ -38,7 +42,7 @@ class Board
         Point *points1D;
         Point **board;
         Stone turn;
-        MouseButton mouse;
+        Position lastButtonDown;
 
 
 };
