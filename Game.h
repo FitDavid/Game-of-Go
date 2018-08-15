@@ -5,7 +5,14 @@
 #include <SDL/SDL_ttf.h>
 #include "GameException.h"
 
+typedef enum _stonetype {EMPTY, BLACK, WHITE} Stone;
 
+typedef struct _point
+        {
+            int x;
+            int y;
+            Stone stone;
+        } Point;
 
 class Game
 {

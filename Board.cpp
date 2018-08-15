@@ -9,7 +9,7 @@ Board::Board():
 {
     points1D = new Point[boardSize*boardSize];
     board = new Point*[boardSize];
-    for(int i = 0; i < boardSize; i++)
+    for(unsigned i = 0; i < boardSize; i++)
         board[i] = points1D + i*boardSize;
     newBoard();
 }
@@ -23,14 +23,13 @@ Board::~Board()
 
 void Board::newBoard()
 {
-    int j = 0;
-    for(int i = 0; i < boardSize; i++)
+    unsigned i, j;
+    for(i = 0, j = 0; i < boardSize; i++)
     {
         for(j = 0; j < boardSize; j++)
         {
             board[i][j].x = i*25;
             board[i][j].y = j*25;
-            board[i][j].isTransparent = false;
             board[i][j].stone = EMPTY;
         }
     }
@@ -47,7 +46,7 @@ void Board::handleEvents(const SDL_Event& event)
                 int col = event.motion.x / boardSize;
                 int row = event.motion.y / boardSize;
                 if(isInRange(col, row) && board[col][row].stone == EMPTY)
-                    board[col][row].isTransparent = true;
+                    ;
             }
     }
 }

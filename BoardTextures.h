@@ -1,7 +1,7 @@
 #ifndef BOARDTEXTURES_H
 #define BOARDTEXTURES_H
 #include "Game.h"
-
+#include "Board.h"
 
 class BoardTextures
 {
@@ -10,14 +10,14 @@ class BoardTextures
     public:
         BoardTextures(SDL_Renderer *const renderer);
         ~BoardTextures();
-        void render(unsigned);
+        void renderBoard(const Board& board);
         void renderBlankBoard();
+        void renderMousePointer(const Board& board);
 
     protected:
 
     private:
         SDL_Renderer *const renderer;
-
         SDL_Surface *boardSurface;
         SDL_Texture *boardTexture;
         SDL_Surface *bStoneSurface;

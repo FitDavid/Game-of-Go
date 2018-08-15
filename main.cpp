@@ -24,7 +24,7 @@ int main(int argc, char *args[])
                 board.handleEvents(event);
 
             }
-            boardTex.render(board.getBoardSize());
+            boardTex.renderBoard(board);
         }
     }
     catch(const std::exception& exc)

@@ -48,16 +48,29 @@ BoardTextures::~BoardTextures()
 
 }
 
-void BoardTextures::render(unsigned boardSize)
+void BoardTextures::renderBoard(const Board& board)
 {
     renderBlankBoard();
     unsigned i, j;
-    for(i = 0, j = 0; i < boardSize; i++)
-        for(j = 0; j < boardSize; j++)
+    SDL_Rect dst;
+    dst.w = dst.h = stoneTexSize;
+    const Point * const * const boardPointer = board.getBoard();
+    for(i = 0, j = 0; i < board.getBoardSize(); i++)
+        for(j = 0; j < board.getBoardSize(); j++)
     {
-
+        if(board.getBoard()[i][j].stone != EMPTY)
+            dst.x = boardPointer[i][j].x;
+            dst.y = boardPointer[i][j].y;
+            if(board.getBoard()[i][j].stone != BLACK)
+            {
+                SDL_RenderCopy(renderer, bStoneTexture, NULL, &dst);
+            }
+            else if(boardPointer[i][j].stone == WHITE)
+            {
+                SDL_RenderCopy(renderer, wStoneTexture, NULL, &dst);
+            }
     }
-    SDL_RenderPresent(renderer);
+    renderMousePointer(board);
 }
 
 void BoardTextures::renderBlankBoard()
@@ -67,3 +80,27 @@ void BoardTextures::renderBlankBoard()
     SDL_Rect dst = {0, 0, boardTexSize, boardTexSize};
     SDL_RenderCopy(renderer, boardTexture, NULL, &dst);
 }
+
+void BoardTextures::renderMousePointer(const Board& board)
+{
+    SDL_Rect dst;
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    dst.x = (int)x * stoneTexSize;
+    dst.y = (int)y * stoneTexSize;
+    dst.w = stoneTexSize;
+    dst.h = stoneTexSize;
+    if(board.getTurn() == BLACK)
+        {
+            SDL_SetTextureAlphaMod(bStoneTexture, 0x80);
+            SDL_RenderCopy(renderer, bStoneTexture, NULL, &dst);
+            SDL_SetTextureAlphaMod(bStoneTexture, 0xFF);
+        }
+    else if(board.getTurn() == WHITE)
+        {
+            SDL_SetTextureAlphaMod(wStoneTexture, 0x80);
+            SDL_RenderCopy(renderer, wStoneTexture, NULL, &dst);
+            SDL_SetTextureAlphaMod(wStoneTexture, 0xFF);
+        }
+}
+

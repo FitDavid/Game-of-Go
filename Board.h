@@ -8,15 +8,6 @@ class Board
 
         typedef enum _mouse{UP,DOWN} MouseButton;
 
-        typedef enum _stonetype {EMPTY, BLACK, WHITE} Stone;
-
-        typedef struct _point
-        {
-            int x; int y;
-            Stone stone;
-            bool isTransparent;
-        } Point;
-
         Board();
 
         ~Board();
@@ -34,9 +25,11 @@ class Board
                 return false;
             }
 
-        unsigned getBoardSize() { return boardSize; }
+        unsigned getBoardSize() const { return boardSize; }
 
-        const Point *const *const getBoard() {return board;}
+        const Point *const *const getBoard() const {return board;}
+
+        Stone getTurn() const {return turn;}
 
     protected:
 
