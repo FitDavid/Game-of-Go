@@ -1,6 +1,5 @@
 #include "Game.h"
 
-
 Game* Game::instance = NULL;
 
 Game::Game():winWidth(640), winHeight(480), renderer(NULL), window(NULL)

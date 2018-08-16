@@ -7,13 +7,13 @@
 
 int main(int argc, char *args[])
 {
-
     try
     {
+        //Create game singleton
         Game* game = Game::createInstance();
         if(game == NULL) throw GameException("Cannot create game instance.");
         Board board;
-        BoardTextures boardTex(game->getRenderer());
+        BoardTextures boardTex(game->getRenderer(), board.getBoardSize());
         bool quit = false;
         SDL_Event event;
         while(!quit)

@@ -1,3 +1,7 @@
+/// \file Game.h
+/// \brief Contains Game class and typedef Point
+///
+
 #ifndef GAME_H
 #define GAME_H
 #include <SDL2/SDL.h>
@@ -5,14 +9,27 @@
 #include <SDL/SDL_ttf.h>
 #include "GameException.h"
 
-typedef enum _stonetype {EMPTY, BLACK, WHITE} Stone;
+/// \brief Describes what is on the point (intersection)
+///
 
-typedef struct _point
+typedef enum _point {EMPTY, BLACK, WHITE} Point;
+
+/// \brief Origin is top left corner. Columns numbered from left to right 0-18 if..., rows numbered from top to bottom 0-18
+///
+
+class Coordinate
         {
-            int x;
-            int y;
-            Stone stone;
-        } Point;
+        public:
+            int col;
+            int row;
+            Coordinate():col(0), row(0) {}
+            Coordinate(int c, int r):col(c), row(r) {}
+            bool operator==(Coordinate pos) {return (this->col == pos.col) && (this->row == pos.row);}
+        };
+
+
+/// \brief Game singleton holds necessary variables/functions for initiating SDL2
+///
 
 class Game
 {

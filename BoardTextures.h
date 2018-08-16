@@ -6,7 +6,7 @@
 class BoardTextures
 {
     public:
-        BoardTextures(SDL_Renderer *const renderer);
+        BoardTextures(SDL_Renderer *const renderer, int boardSize);
         ~BoardTextures();
         void render(const Board& board);
         void renderBlankBoard();
@@ -24,6 +24,7 @@ class BoardTextures
         SDL_Texture *wStoneTexture;
         int boardTexSize;
         int stoneTexSize;
+        std::vector<Coordinate> topLeftCorners;
 };
 
 #endif // BOARDTEXTURES_H

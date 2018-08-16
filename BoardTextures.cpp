@@ -1,6 +1,7 @@
 #include "BoardTextures.h"
+#include <iostream>
 
-BoardTextures::BoardTextures(SDL_Renderer *const renderer):
+BoardTextures::BoardTextures(SDL_Renderer *const renderer, int boardSize):
     renderer(renderer),
     boardSurface(NULL),
     boardTexture(NULL),
@@ -35,6 +36,18 @@ BoardTextures::BoardTextures(SDL_Renderer *const renderer):
     SDL_SetTextureBlendMode(bStoneTexture, SDL_BLENDMODE_BLEND);
     SDL_SetTextureBlendMode(wStoneTexture, SDL_BLENDMODE_BLEND);
 
+    topLeftCorners.reserve(boardSize*boardSize);
+    int i,j;
+    for(i = 0, j = 0; i < boardSize; i++)
+    {
+        for(j = 0; j < boardSize; j++)
+        {
+            topLeftCorners[i*boardSize + j].col = i*stoneTexSize;
+            topLeftCorners[i*boardSize + j].row = j*stoneTexSize;
+            //std::cout << topLeftCorners[i*boardSize + j].col << " " << topLeftCorners[i*boardSize + j].row << std::endl;
+        }
+    }
+
     renderBlankBoard();
     SDL_RenderPresent(renderer);
     return;
@@ -59,14 +72,14 @@ void BoardTextures::render(const Board& board)
     for(i = 0, j = 0; i < board.getBoardSize(); i++)
         for(j = 0; j < board.getBoardSize(); j++)
     {
-        if(boardPointer[i][j].stone != EMPTY)
-            dst.x = boardPointer[i][j].x;
-            dst.y = boardPointer[i][j].y;
-            if(boardPointer[i][j].stone == BLACK)
+        if(boardPointer[i][j] != EMPTY)
+            dst.x = topLeftCorners[i*board.getBoardSize() + j].col;
+            dst.y = topLeftCorners[i*board.getBoardSize() + j].row;
+            if(boardPointer[i][j] == BLACK)
             {
                 SDL_RenderCopy(renderer, bStoneTexture, NULL, &dst);
             }
-            else if(boardPointer[i][j].stone == WHITE)
+            else if(boardPointer[i][j] == WHITE)
             {
                 SDL_RenderCopy(renderer, wStoneTexture, NULL, &dst);
             }

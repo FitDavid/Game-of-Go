@@ -1,5 +1,15 @@
 #include "Board.h"
 
+/// \brief
+///
+/// \param
+/// \param
+/// \return
+///
+///
+
+
+
 Board::Board():
     boardSize(19),
     points1D(NULL),
@@ -23,6 +33,19 @@ Board::~Board()
     delete[] points1D;
 }
 
+/// \brief load a board position from binary file \todo could handle .sgf as well
+/// \return true if succeeded
+///
+
+bool Board::loadBoard()
+{
+
+}
+
+/// \brief Sets every point to EMPTY clearing the board
+///
+
+
 void Board::newBoard()
 {
     int i, j;
@@ -30,9 +53,7 @@ void Board::newBoard()
     {
         for(j = 0; j < boardSize; j++)
         {
-            board[i][j].x = i*25;
-            board[i][j].y = j*25;
-            board[i][j].stone = EMPTY;
+            board[i][j] = EMPTY;
         }
     }
 
@@ -63,7 +84,7 @@ void Board::handleEvents(const SDL_Event& event, int stoneTexSize)
                 {
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    Position pos(x / stoneTexSize, y / stoneTexSize);
+                    Coordinate pos(x / stoneTexSize, y / stoneTexSize);
                     //if mouse is still in the square
                     if(pos == lastButtonDown)
                         {
@@ -75,17 +96,17 @@ void Board::handleEvents(const SDL_Event& event, int stoneTexSize)
     }
 }
 
-bool Board::putStone(Position pos)
+bool Board::putStone(Coordinate pos)
 {
     bool success = false;
-    if(board[pos.col][pos.row].stone == EMPTY)
+    if(board[pos.col][pos.row]== EMPTY)
     {
-        board[pos.col][pos.row].stone = turn;
+        board[pos.col][pos.row]= turn;
 
-        Position posR(pos.col +1, pos.row);
+        Coordinate posR(pos.col +1, pos.row);
         if(isInRange(posR))
         {
-            if(board[posR.col][posR.row].stone == oppositeTurn())
+            if(board[posR.col][posR.row]== oppositeTurn())
             {
                 path.resize(0);
                 if(isDead(posR, true))
@@ -95,14 +116,14 @@ bool Board::putStone(Position pos)
                     removeDeadGroup(posR);
                 }
             }
-            if(board[posR.col][posR.row].stone == EMPTY)
+            if(board[posR.col][posR.row]== EMPTY)
                 success = true;
         }
 
-        Position posL(pos.col - 1, pos.row);
+        Coordinate posL(pos.col - 1, pos.row);
         if(isInRange(posL))
         {
-            if(board[posL.col][posL.row].stone == oppositeTurn())
+            if(board[posL.col][posL.row]== oppositeTurn())
             {
                 path.resize(0);
                 if(isDead(posL, true))
@@ -112,14 +133,14 @@ bool Board::putStone(Position pos)
                     removeDeadGroup(posL);
                 }
             }
-            if(board[posL.col][posL.row].stone == EMPTY)
+            if(board[posL.col][posL.row]== EMPTY)
                 success = true;
         }
 
-        Position posD(pos.col, pos.row + 1);
+        Coordinate posD(pos.col, pos.row + 1);
         if(isInRange(posD))
         {
-            if(board[posD.col][posD.row].stone == oppositeTurn())
+            if(board[posD.col][posD.row]== oppositeTurn())
             {
                 path.resize(0);
                 if(isDead(posD, true))
@@ -129,14 +150,14 @@ bool Board::putStone(Position pos)
                     removeDeadGroup(posD);
                 }
             }
-            if(board[posD.col][posD.row].stone == EMPTY)
+            if(board[posD.col][posD.row]== EMPTY)
                 success = true;
         }
 
-        Position posU(pos.col, pos.row - 1);
+        Coordinate posU(pos.col, pos.row - 1);
         if(isInRange(posU))
         {
-            if(board[posU.col][posU.row].stone == oppositeTurn())
+            if(board[posU.col][posU.row]== oppositeTurn())
             {
                 path.resize(0);
                 if(isDead(posU, true))
@@ -146,7 +167,7 @@ bool Board::putStone(Position pos)
                     removeDeadGroup(posU);
                 }
             }
-            if(board[posU.col][posU.row].stone == EMPTY)
+            if(board[posU.col][posU.row]== EMPTY)
                 success = true;
         }
 
@@ -154,27 +175,27 @@ bool Board::putStone(Position pos)
         path.resize(0);
         if(isDead(pos, false))
         {
-            board[pos.col][pos.row].stone = EMPTY;
+            board[pos.col][pos.row]= EMPTY;
         }
         else return true;
     }
     return false;
 }
 
-bool Board::isDead(Position pos,const bool opposite)
+bool Board::isDead(Coordinate pos,const bool opposite)
 {
     path.push_back(pos);
     bool dead = true;
-    Stone color;
+    Point color;
     if(opposite)color = oppositeTurn();
     else color = turn;
 
-    Position posR(pos.col +1, pos.row);
+    Coordinate posR(pos.col +1, pos.row);
     if(isInRange(posR) && dead)
     {
-        if(board[posR.col][posR.row].stone == EMPTY)
+        if(board[posR.col][posR.row]== EMPTY)
             dead = false;
-        else if(board[posR.col][posR.row].stone == color)
+        else if(board[posR.col][posR.row]== color)
         {
             bool haventBeen = (path.end() == std::find(path.begin(), path.end(), posR));
             if(haventBeen)
@@ -182,12 +203,12 @@ bool Board::isDead(Position pos,const bool opposite)
         }
     }
 
-    Position posL(pos.col - 1, pos.row);
+    Coordinate posL(pos.col - 1, pos.row);
     if(isInRange(posL) && dead)
     {
-        if(board[posL.col][posL.row].stone == EMPTY)
+        if(board[posL.col][posL.row]== EMPTY)
             dead = false;
-        else if(board[posL.col][posL.row].stone == color)
+        else if(board[posL.col][posL.row]== color)
         {
             bool haventBeen = (path.end() == std::find(path.begin(), path.end(), posL));
             if(haventBeen)
@@ -195,12 +216,12 @@ bool Board::isDead(Position pos,const bool opposite)
         }
     }
 
-    Position posD(pos.col, pos.row + 1);
+    Coordinate posD(pos.col, pos.row + 1);
     if(isInRange(posD) && dead)
     {
-        if(board[posD.col][posD.row].stone == EMPTY)
+        if(board[posD.col][posD.row]== EMPTY)
             dead = false;
-        else if(board[posD.col][posD.row].stone == color)
+        else if(board[posD.col][posD.row]== color)
         {
             bool haventBeen = (path.end() == std::find(path.begin(), path.end(), posD));
             if(haventBeen)
@@ -208,12 +229,12 @@ bool Board::isDead(Position pos,const bool opposite)
         }
     }
 
-    Position posU(pos.col, pos.row - 1);
+    Coordinate posU(pos.col, pos.row - 1);
     if(isInRange(posU) && dead)
     {
-        if(board[posU.col][posU.row].stone == EMPTY)
+        if(board[posU.col][posU.row]== EMPTY)
             dead = false;
-        else if(board[posU.col][posU.row].stone == color)
+        else if(board[posU.col][posU.row]== color)
         {
             bool haventBeen = (path.end() == std::find(path.begin(), path.end(), posU));
             if(haventBeen)
@@ -223,48 +244,48 @@ bool Board::isDead(Position pos,const bool opposite)
     return dead;
 }
 
-void Board::removeDeadGroup(Position pos)
+void Board::removeDeadGroup(Coordinate pos)
 {
     path.push_back(pos);
-    Stone color = board[pos.col][pos.row].stone;
+    Point color = board[pos.col][pos.row];
     if(color == EMPTY) throw GameException("Cannot remove from empty point.");
-    board[pos.col][pos.row].stone = EMPTY;
+    board[pos.col][pos.row]= EMPTY;
     if(color == BLACK) bPrisoner++;
     if(color == WHITE) wPrisoner++;
 
-    Position posR(pos.col +1, pos.row);
+    Coordinate posR(pos.col +1, pos.row);
     if(isInRange(posR))
     {
         bool haventBeen = (path.end() == std::find(path.begin(), path.end(), posR));
         if(haventBeen)
-            if(board[posR.col][posR.row].stone == color)
+            if(board[posR.col][posR.row]== color)
                 removeDeadGroup(posR);
     }
 
-    Position posL(pos.col - 1, pos.row);
+    Coordinate posL(pos.col - 1, pos.row);
     if(isInRange(posL))
     {
         bool haventBeen = (path.end()== std::find(path.begin(), path.end(), posL));
         if(haventBeen)
-            if(board[posL.col][posL.row].stone == color)
+            if(board[posL.col][posL.row]== color)
                 removeDeadGroup(posL);
     }
 
-    Position posD(pos.col, pos.row + 1);
+    Coordinate posD(pos.col, pos.row + 1);
     if(isInRange(posD))
     {
         bool haventBeen = (path.end() == std::find(path.begin(), path.end(), posD));
         if(haventBeen)
-            if(board[posD.col][posD.row].stone == color)
+            if(board[posD.col][posD.row]== color)
                 removeDeadGroup(posD);
     }
 
-    Position posU(pos.col, pos.row - 1);
+    Coordinate posU(pos.col, pos.row - 1);
     if(isInRange(posU))
     {
         bool haventBeen = (path.end() == std::find(path.begin(), path.end(), posU));
         if(haventBeen)
-            if(board[posU.col][posU.row].stone == color)
+            if(board[posU.col][posU.row]== color)
                 removeDeadGroup(posU);
     }
 }
