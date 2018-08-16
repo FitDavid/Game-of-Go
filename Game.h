@@ -1,5 +1,5 @@
 /// \file Game.h
-/// \brief Contains Game class and typedef Point
+/// \brief Contains Game singleton and Point enumeration
 ///
 
 #ifndef GAME_H
@@ -14,18 +14,23 @@
 
 typedef enum _point {EMPTY, BLACK, WHITE} Point;
 
-/// \brief Origin is top left corner. Columns numbered from left to right 0-18 if..., rows numbered from top to bottom 0-18
+/// \brief Holds coordinate of a point on board, but also can contain pixel coordinates.
+/// Origin is at the top left corner in either case. Columns numbered from left to right 0-18, rows numbered from top to bottom 0-18.
+/// Or from 0 windowsize if it holds pixels.
 ///
 
 class Coordinate
-        {
-        public:
-            int col;
-            int row;
-            Coordinate():col(0), row(0) {}
-            Coordinate(int c, int r):col(c), row(r) {}
-            bool operator==(Coordinate pos) {return (this->col == pos.col) && (this->row == pos.row);}
-        };
+{
+public:
+    int col;
+    int row;
+    Coordinate():col(0), row(0) {}
+    Coordinate(int c, int r):col(c), row(r) {}
+    bool operator==(Coordinate pos)
+    {
+        return (this->col == pos.col) && (this->row == pos.row);
+    }
+};
 
 
 /// \brief Game singleton holds necessary variables/functions for initiating SDL2
@@ -33,32 +38,38 @@ class Coordinate
 
 class Game
 {
-    public:
-        static Game* instance;
+public:
+    static Game* instance;
 
-        static Game* createInstance()
+    static Game* createInstance()
+    {
+        if(instance == NULL)
         {
-            if(instance == NULL)
-            {
-                instance = new Game();
-                return instance;
-            }
-            return NULL;
+            instance = new Game();
+            return instance;
         }
+        return NULL;
+    }
 
-        SDL_Renderer * const getRenderer()  {return renderer;}
-        SDL_Window * const getWindow() {return window;}
+    SDL_Renderer * const getRenderer()
+    {
+        return renderer;
+    }
+    SDL_Window * const getWindow()
+    {
+        return window;
+    }
 
-        ~Game();
+    ~Game();
 
-    protected:
+protected:
 
-    private:
+private:
 
-        Game();
-        const int winWidth, winHeight;
-        SDL_Renderer *renderer;
-        SDL_Window *window;
+    Game();
+    const int winWidth, winHeight;
+    SDL_Renderer *renderer;
+    SDL_Window *window;
 
 };
 

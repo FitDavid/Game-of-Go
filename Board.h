@@ -28,20 +28,20 @@ class Board
                 return false;
             }
 
-        bool isInRange(Coordinate pos)///< Overloaded for convenience
+        bool isInRange(Coordinate coord)///< Overloaded for convenience
             {
-                if(pos.col >= 0 && pos.col < boardSize && pos.row >= 0 && pos.row < boardSize)
+                if(coord.col >= 0 && coord.col < boardSize && coord.row >= 0 && coord.row < boardSize)
                     return true;
                 return false;
             }
 
-        bool putStone(Coordinate pos);
+        bool putStone(Coordinate);
 
-        void removeDeadGroup(Coordinate pos);
+        void removeDeadGroup(Coordinate);
 
-        bool isDead(Coordinate pos, bool opposite);
+        bool isDead(Coordinate, bool opposite);
 
-        Point oppositeTurn()
+        Point oppositeTurn() ///< simply returns the opposite color
         {
             if(turn == BLACK) return WHITE;
             else if(turn == WHITE) return BLACK;
@@ -58,12 +58,12 @@ class Board
 
     private:
         int boardSize;
-        Point *points1D;
-        Point **board;
+        Point *points1D; ///< this will point to an array holds all the points
+        Point **board; ///< this will point to an array holding pointers creating a dynamic 2D array
         Point turn; ///< Holds which player is next
         Coordinate lastButtonDown; ///< Holds where was the mouse button held down last
-        bool mouseButtonDown;
-        std::vector<Coordinate> path;
+        bool mouseButtonDown; ///< was it pressed down before?
+        std::vector<Coordinate> path; ///< Recursive functions need this to track which points have been already observed.
         unsigned bPrisoner;
         unsigned wPrisoner;
 };
