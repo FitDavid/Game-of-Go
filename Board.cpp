@@ -63,11 +63,9 @@ void Board::handleEvents(const SDL_Event& event, int stoneTexSize)
                 {
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    int col = x / stoneTexSize;
-                    int row = y / stoneTexSize;
-                    Position pos(col, row);
+                    Position pos(x / stoneTexSize, y / stoneTexSize);
                     //if mouse is still in the square
-                    if(pos.col == lastButtonDown.col && pos.row == lastButtonDown.row)
+                    if(pos == lastButtonDown)
                         {
                             if(putStone(pos)) turn = oppositeTurn();
                         }
@@ -90,7 +88,7 @@ bool Board::putStone(Position pos)
             if(board[posR.col][posR.row].stone == oppositeTurn())
             {
                 path.resize(0);
-                if(isDead(pos, true))
+                if(isDead(posR, true))
                 {
                     success = true;
                     path.resize(0);
@@ -107,7 +105,7 @@ bool Board::putStone(Position pos)
             if(board[posL.col][posL.row].stone == oppositeTurn())
             {
                 path.resize(0);
-                if(isDead(pos, true))
+                if(isDead(posL, true))
                 {
                     success = true;
                     path.resize(0);
@@ -124,7 +122,7 @@ bool Board::putStone(Position pos)
             if(board[posD.col][posD.row].stone == oppositeTurn())
             {
                 path.resize(0);
-                if(isDead(pos, true))
+                if(isDead(posD, true))
                 {
                     success = true;
                     path.resize(0);
@@ -141,7 +139,7 @@ bool Board::putStone(Position pos)
             if(board[posU.col][posU.row].stone == oppositeTurn())
             {
                 path.resize(0);
-                if(isDead(pos, true))
+                if(isDead(posU, true))
                 {
                     success = true;
                     path.resize(0);
@@ -154,12 +152,16 @@ bool Board::putStone(Position pos)
 
         if(success) return true;
         path.resize(0);
-        if(isDead(pos, false)) board[pos.col][pos.row].stone = EMPTY;
+        if(isDead(pos, false))
+        {
+            board[pos.col][pos.row].stone = EMPTY;
+        }
+        else return true;
     }
     return false;
 }
 
-bool Board::isDead(Position pos, bool opposite)
+bool Board::isDead(Position pos,const bool opposite)
 {
     path.push_back(pos);
     bool dead = true;
