@@ -21,14 +21,14 @@ class Board
 
         void handleEvents(const SDL_Event& event, int stoneTexSize);
 
-        bool isInRange(int col, int row = 0)///< Checks if given Coordinates are on the board.
+        bool isInRange(int col, int row = 0)
             {
                 if(col >= 0 && col < boardSize && row >= 0 && row < boardSize)
                     return true;
                 return false;
             }
 
-        bool isInRange(Coordinate coord)///< Overloaded for convenience
+        bool isInRange(Coordinate coord)
             {
                 if(coord.col >= 0 && coord.col < boardSize && coord.row >= 0 && coord.row < boardSize)
                     return true;
@@ -41,7 +41,7 @@ class Board
 
         bool isDead(Coordinate, bool opposite);
 
-        Point oppositeTurn() ///< simply returns the opposite color
+        Point oppositeTurn()
         {
             if(turn == BLACK) return WHITE;
             else if(turn == WHITE) return BLACK;
@@ -64,8 +64,8 @@ class Board
         Coordinate lastButtonDown; ///< Holds where was the mouse button held down last
         bool mouseButtonDown; ///< was it pressed down before?
         std::vector<Coordinate> path; ///< Recursive functions need this to track which points have been already observed.
-        unsigned bPrisoner;
-        unsigned wPrisoner;
+        unsigned bPrisoner; ///< counter
+        unsigned wPrisoner; ///< counter
 };
 
 #endif // BOARD_H

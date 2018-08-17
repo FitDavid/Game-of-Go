@@ -2,6 +2,8 @@
 #define GAMEEXCEPTION_H
 #include <exception>
 
+/// \brief Very basic exception class
+///
 
 class GameException: public std::exception
 {

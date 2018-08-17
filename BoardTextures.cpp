@@ -1,5 +1,11 @@
 #include "BoardTextures.h"
-#include <iostream>
+
+/// \brief Loads all the textures from .png
+///
+/// \param renderer The rendering context provided by Game class
+/// \param boardSize diameter of the board 19, 13 or 9
+///
+
 
 BoardTextures::BoardTextures(SDL_Renderer *const renderer, int boardSize):
     renderer(renderer),
@@ -44,7 +50,6 @@ BoardTextures::BoardTextures(SDL_Renderer *const renderer, int boardSize):
         {
             topLeftCorners[i*boardSize + j].col = i*stoneTexSize;
             topLeftCorners[i*boardSize + j].row = j*stoneTexSize;
-            //std::cout << topLeftCorners[i*boardSize + j].col << " " << topLeftCorners[i*boardSize + j].row << std::endl;
         }
     }
 
@@ -59,8 +64,11 @@ BoardTextures::~BoardTextures()
     SDL_DestroyTexture(boardTexture);
     SDL_DestroyTexture(bStoneTexture);
     SDL_DestroyTexture(wStoneTexture);
-
 }
+
+/// \brief Renders textures according to boardposition.
+/// Also, it renders a transparent stone of next player color to where the mouse points
+///
 
 void BoardTextures::render(const Board& board)
 {
@@ -103,6 +111,9 @@ void BoardTextures::render(const Board& board)
         }
     SDL_RenderPresent(renderer);
 }
+
+/// \brief Renders board without any stones.
+///
 
 void BoardTextures::renderBlankBoard()
 {

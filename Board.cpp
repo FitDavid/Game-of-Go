@@ -20,7 +20,7 @@ Board::Board():
     path.reserve(20);
 }
 
-Board::~Board()///< Deallocates memory.
+Board::~Board()
 {
     delete[] board;
     delete[] points1D;
@@ -52,7 +52,7 @@ void Board::newBoard()
 
 }
 
-/// \brief Handles mouse clicks. Currently it does not distinguish between mousebuttons.
+/// \brief Handles mouse clicks. \todo Currently it does not distinguish between mousebuttons.
 /// \param event Next event from queue
 /// \param stoneTexSize Needs to have this to translate between pixel coordinate and point coordinate.
 ///
@@ -104,15 +104,22 @@ void Board::handleEvents(const SDL_Event& event, int stoneTexSize)
 bool Board::putStone(Coordinate coord)
 {
     bool success = false;
+    //if point is empty
     if(board[coord.col][coord.row]== EMPTY)
     {
+        //we put down the stone, then check the resulting situation
+        //until we decide if it is legal to do, it remains a theoretical move
         board[coord.col][coord.row]= turn;
-
+        //we look all four directions: Right Left Down Up
         Coordinate coordR(coord.col +1, coord.row);
         if(isInRange(coordR))
         {
+            //we check for opposite colors around
             if(board[coordR.col][coordR.row]== oppositeTurn())
             {
+                // isDead() and removeDeadGroup() needs path to be emptied.
+                // Path variable will hold the points along which we 'walk around' in the group
+                // success means we either succeeded to remove a group, or the point had been empty anyway.
                 path.resize(0);
                 if(isDead(coordR, true))
                 {
@@ -177,6 +184,9 @@ bool Board::putStone(Coordinate coord)
         }
 
         if(success) return true;
+        //lastly we check the stone we have put down
+        //this new stone can join previously separate groups, so we have to check recursively for a liberty
+        //if not dead, it can be put down, otherwise we remove it from the point
         path.resize(0);
         if(isDead(coord, false))
         {
@@ -187,6 +197,15 @@ bool Board::putStone(Coordinate coord)
     return false;
 }
 
+/// \brief Examines if group has any liberty.
+///
+/// \param coord Can be any point of the group examined.
+/// \param opposite True if we examine a group whose color is opposite of the stone put
+/// \return True if it has no liberties, false otherwise.
+///
+///
+
+
 bool Board::isDead(Coordinate coord,const bool opposite)
 {
     path.push_back(coord);
@@ -194,7 +213,8 @@ bool Board::isDead(Coordinate coord,const bool opposite)
     Point color;
     if(opposite)color = oppositeTurn();
     else color = turn;
-
+    //In every direction we check if there is a liberty or the group spreads to that point as well,
+    //if so we invoke the function on the neighbourigóng square (recursion)
     Coordinate coordR(coord.col +1, coord.row);
     if(isInRange(coordR) && dead)
     {
@@ -249,6 +269,13 @@ bool Board::isDead(Coordinate coord,const bool opposite)
     return dead;
 }
 
+/// \brief Removes groups. It needs only one stone's coordinates to remove the group. Does not examine if group has liberties.
+/// Follows the same recursive logic as functions before.
+///
+/// \param coord This is the coordinate of any member of the group.
+///
+
+
 void Board::removeDeadGroup(Coordinate coord)
 {
     path.push_back(coord);
@@ -261,6 +288,7 @@ void Board::removeDeadGroup(Coordinate coord)
     Coordinate coordR(coord.col +1, coord.row);
     if(isInRange(coordR))
     {
+        //stores wheter we have examined that point before, true if we have not
         bool haventBeen = (path.end() == std::find(path.begin(), path.end(), coordR));
         if(haventBeen)
             if(board[coordR.col][coordR.row]== color)
