@@ -5,6 +5,7 @@
 #include <algorithm>
 
 /// \brief Contains current position on the board in a 2D array. Checks if move is legal and can put stone if so.
+/// \todo include ko rule
 ///
 
 class Board

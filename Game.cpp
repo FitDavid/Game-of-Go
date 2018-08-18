@@ -2,7 +2,10 @@
 
 Game* Game::instance = NULL;
 
-Game::Game():winWidth(640), winHeight(480), renderer(NULL), window(NULL) ///< \brief Initializes SDL, and other extensions
+/// \brief Initializes SDL and other extensions.
+///
+
+Game::Game():winWidth(640), winHeight(480), renderer(NULL), window(NULL)
 {
     if(SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO ) != 0) throw GameException("SDL Initialization failure");
     if(IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) throw GameException("SDL_image initialization failure.");
@@ -13,7 +16,10 @@ Game::Game():winWidth(640), winHeight(480), renderer(NULL), window(NULL) ///< \b
     if(renderer == NULL) throw GameException("Renderer creation failure.");
 }
 
-Game::~Game() ///< \brief Close SDL structures
+/// \brief Closes SDL and other extensions.
+///
+
+Game::~Game()
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

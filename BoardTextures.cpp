@@ -95,11 +95,11 @@ void BoardTextures::render(const Board& board)
     //Rendering mouse pointer
     int x, y;
     SDL_GetMouseState(&x, &y);
-    dst.x = x / stoneTexSize * stoneTexSize;
+    dst.x = x / stoneTexSize * stoneTexSize; // we cut off the part over N*25, to get the top left corner of a square over an intersection
     dst.y = y / stoneTexSize * stoneTexSize;
     if(board.getTurn() == BLACK)
         {
-            SDL_SetTextureAlphaMod(bStoneTexture, 0x80);
+            SDL_SetTextureAlphaMod(bStoneTexture, 0x80); // make it transparent
             SDL_RenderCopy(renderer, bStoneTexture, NULL, &dst);
             SDL_SetTextureAlphaMod(bStoneTexture, 0xFF);
         }
@@ -112,7 +112,7 @@ void BoardTextures::render(const Board& board)
     SDL_RenderPresent(renderer);
 }
 
-/// \brief Renders board without any stones.
+/// \brief Renders a board on screen without any stones.
 ///
 
 void BoardTextures::renderBlankBoard()

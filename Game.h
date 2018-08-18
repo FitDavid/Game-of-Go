@@ -14,9 +14,9 @@
 
 typedef enum _point {EMPTY, BLACK, WHITE} Point;
 
-/// \brief Holds coordinate of a point on board, but also can contain pixel coordinates.
+/// \brief Holds coordinates of a point on board, but also can contain pixel coordinates.
 /// Origin is at the top left corner in either case. Columns numbered from left to right 0-18, rows numbered from top to bottom 0-18.
-/// Or from 0 windowsize if it holds pixels.
+/// Or from 0 to window size when it holds pixels.
 ///
 
 class Coordinate

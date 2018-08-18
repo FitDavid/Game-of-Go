@@ -21,11 +21,8 @@ int main(int argc, char *args[])
             while(SDL_PollEvent(&event) > 0)
             {
                 if(event.type == SDL_QUIT) quit = true;
-                else
-                {
-                    board.handleEvents(event, boardTex.getStoneTexSize() );
-                    boardTex.render(board);
-                }
+                board.handleEvents(event, boardTex.getStoneTexSize() );
+                boardTex.render(board);
             }
         }
     }

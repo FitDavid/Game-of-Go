@@ -1,6 +1,6 @@
 #include "Board.h"
 
-/// \brief Dynamically allocates for the board, by default is 19x19
+/// \brief Dynamically allocates memory for the board, by default board is 19x19
 ///
 
 Board::Board():
@@ -52,7 +52,7 @@ void Board::newBoard()
 
 }
 
-/// \brief Handles mouse clicks. \todo Currently it does not distinguish between mousebuttons.
+/// \brief Handles mouse clicks. \todo Currently it does not distinguish between mouse buttons.
 /// \param event Next event from queue
 /// \param stoneTexSize Needs to have this to translate between pixel coordinate and point coordinate.
 ///
@@ -96,8 +96,9 @@ void Board::handleEvents(const SDL_Event& event, int stoneTexSize)
     }
 }
 
-/// \brief Checks if move is legal, then puts a stone of appropriate color. Removes dead stones if necessary.
-/// \param coord Where to put stone
+/// \brief Checks if move is legal, then puts a stone of appropriate color.
+/// Removes dead stones if necessary by calling \code removeDeadGroup() \endcode .
+/// \param coord Where to place stone
 /// \return true, if stone has been put
 ///
 
@@ -210,10 +211,12 @@ bool Board::isDead(Coordinate coord,const bool opposite)
 {
     path.push_back(coord);
     bool dead = true;
+    // It needs to know what color we are dealing with. if opposite of the color of the player playing the stone,
+    // then stones will be removed, If same color, It is an illegal move.
     Point color;
     if(opposite)color = oppositeTurn();
     else color = turn;
-    //In every direction we check if there is a liberty or the group spreads to that point as well,
+    //In every direction we check if there is a liberty or the group occupiesthat point as well,
     //if so we invoke the function on the neighbourigóng square (recursion)
     Coordinate coordR(coord.col +1, coord.row);
     if(isInRange(coordR) && dead)
