@@ -1,12 +1,12 @@
 /// \file Game.h
-/// \brief Contains Game singleton and Point enumeration
+/// \brief Contains Point enumeration Cordinate class and Game singleton
 ///
 
 #ifndef GAME_H
 #define GAME_H
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include "GameException.h"
 
 /// \brief Describes what is on the point (intersection)

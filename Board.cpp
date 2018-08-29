@@ -16,14 +16,28 @@ Board::Board():
     board = new Point*[boardSize];
     for(int i = 0; i < boardSize; i++)
         board[i] = points1D + i*boardSize;
+    prevPoints1D = new Point[boardSize*boardSize];
+    prevBoard = new Point*[boardSize];
+    for(int i = 0; i < boardSize; i++)
+        prevBoard[i] = prevPoints1D + i*boardSize;
+    prevprevPoints1D = new Point[boardSize*boardSize];
+    prevprevBoard = new Point*[boardSize];
+    for(int i = 0; i < boardSize; i++)
+        prevprevBoard[i] = prevprevPoints1D + i*boardSize;
     newBoard();
-    path.reserve(20);
+    stonesRemoved.reserve(20);
+    stonesObserved.reserve(20);
+    moves.reserve(200);
 }
+
+/// \brief Deallocates memory, that is all.
 
 Board::~Board()
 {
     delete[] board;
     delete[] points1D;
+    delete[] prevBoard;
+    delete[] prevPoints1D;
 }
 
 /// \brief Loads a board position from binary file. \todo It could handle .sgf as well.
@@ -47,6 +61,8 @@ void Board::newBoard()
         for(j = 0; j < boardSize; j++)
         {
             board[i][j] = EMPTY;
+            prevBoard[i][j] = EMPTY;
+            prevprevBoard[i][j] = EMPTY;
         }
     }
 
@@ -85,10 +101,7 @@ void Board::handleEvents(const SDL_Event& event, int stoneTexSize)
                     SDL_GetMouseState(&x, &y);
                     Coordinate coord(x / stoneTexSize, y / stoneTexSize);
                     //if mouse is still in the square
-                    if(coord == lastButtonDown)
-                        {
-                            if(putStone(coord)) turn = oppositeTurn();
-                        }
+                    if(coord == lastButtonDown) putStone(coord);
                 }
                 mouseButtonDown = false;
             }
@@ -104,9 +117,11 @@ void Board::handleEvents(const SDL_Event& event, int stoneTexSize)
 
 bool Board::putStone(Coordinate coord)
 {
-    bool success = false;
+    // these will be reset just once so that it will hold every observed/removed stone.
+    stonesRemoved.resize(0);
+    stonesObserved.resize(0);
     //if point is empty
-    if(board[coord.col][coord.row]== EMPTY)
+    if(board[coord.col][coord.row] == EMPTY)
     {
         //we put down the stone, then check the resulting situation
         //until we decide if it is legal to do, it remains a theoretical move
@@ -118,19 +133,11 @@ bool Board::putStone(Coordinate coord)
             //we check for opposite colors around
             if(board[coordR.col][coordR.row]== oppositeTurn())
             {
-                // isDead() and removeDeadGroup() needs path to be emptied.
-                // Path variable will hold the points along which we 'walk around' in the group
-                // success means we either succeeded to remove a group, or the point had been empty anyway.
-                path.resize(0);
-                if(isDead(coordR, true))
+                if(isDead(coordR))
                 {
-                    success = true;
-                    path.resize(0);
                     removeDeadGroup(coordR);
                 }
             }
-            if(board[coordR.col][coordR.row]== EMPTY)
-                success = true;
         }
 
         Coordinate coordL(coord.col - 1, coord.row);
@@ -138,16 +145,11 @@ bool Board::putStone(Coordinate coord)
         {
             if(board[coordL.col][coordL.row]== oppositeTurn())
             {
-                path.resize(0);
-                if(isDead(coordL, true))
+                if(isDead(coordL))
                 {
-                    success = true;
-                    path.resize(0);
                     removeDeadGroup(coordL);
                 }
             }
-            if(board[coordL.col][coordL.row]== EMPTY)
-                success = true;
         }
 
         Coordinate coordD(coord.col, coord.row + 1);
@@ -155,16 +157,11 @@ bool Board::putStone(Coordinate coord)
         {
             if(board[coordD.col][coordD.row]== oppositeTurn())
             {
-                path.resize(0);
-                if(isDead(coordD, true))
+                if(isDead(coordD))
                 {
-                    success = true;
-                    path.resize(0);
                     removeDeadGroup(coordD);
                 }
             }
-            if(board[coordD.col][coordD.row]== EMPTY)
-                success = true;
         }
 
         Coordinate coordU(coord.col, coord.row - 1);
@@ -172,28 +169,40 @@ bool Board::putStone(Coordinate coord)
         {
             if(board[coordU.col][coordU.row]== oppositeTurn())
             {
-                path.resize(0);
-                if(isDead(coordU, true))
+                if(isDead(coordU))
                 {
-                    success = true;
-                    path.resize(0);
                     removeDeadGroup(coordU);
                 }
             }
-            if(board[coordU.col][coordU.row]== EMPTY)
-                success = true;
         }
-
-        if(success) return true;
-        //lastly we check the stone we have put down
+        //at this point all surrounding dead stones have been removed
+        //so finally we check the stone we have put down
         //this new stone can join previously separate groups, so we have to check recursively for a liberty
         //if not dead, it can be put down, otherwise we remove it from the point
-        path.resize(0);
-        if(isDead(coord, false))
+        if(isDead(coord)) //the if argument can only be true if no dead groups have been removed
         {
             board[coord.col][coord.row]= EMPTY;
+            return false;
         }
-        else return true;
+        else
+        {
+            //this implements ko
+            if(compareBoards())
+            {
+                //stonesRemoved should hold the only removed stone, in case of a ko
+                Coordinate removed = stonesRemoved[0];
+                board[removed.col][removed.row] = oppositeTurn();
+                board[coord.col][coord.row]= EMPTY;
+                return false;
+            }
+            else
+            {
+                turn = oppositeTurn();
+                copyBoards();
+                moves.push_back(coord);
+                return true;
+            }
+        }
     }
     return false;
 }
@@ -201,22 +210,18 @@ bool Board::putStone(Coordinate coord)
 /// \brief Examines if group has any liberty.
 ///
 /// \param coord Can be any point of the group examined.
-/// \param opposite True if we examine a group whose color is opposite of the stone put
 /// \return True if it has no liberties, false otherwise.
 ///
 ///
 
 
-bool Board::isDead(Coordinate coord,const bool opposite)
+bool Board::isDead(Coordinate coord)
 {
-    path.push_back(coord);
+
+    stonesObserved.push_back(coord);
     bool dead = true;
-    // It needs to know what color we are dealing with. if opposite of the color of the player playing the stone,
-    // then stones will be removed, If same color, It is an illegal move.
-    Point color;
-    if(opposite)color = oppositeTurn();
-    else color = turn;
-    //In every direction we check if there is a liberty or the group occupiesthat point as well,
+    Point color = board[coord.col][coord.row];
+    //We check in every direction if there is a liberty or the group occupies that point as well,
     //if so we invoke the function on the neighbourigóng square (recursion)
     Coordinate coordR(coord.col +1, coord.row);
     if(isInRange(coordR) && dead)
@@ -225,9 +230,9 @@ bool Board::isDead(Coordinate coord,const bool opposite)
             dead = false;
         else if(board[coordR.col][coordR.row]== color)
         {
-            bool haventBeen = (path.end() == std::find(path.begin(), path.end(), coordR));
+            bool haventBeen = (stonesObserved.end() == std::find(stonesObserved.begin(), stonesObserved.end(), coordR));
             if(haventBeen)
-                dead = isDead(coordR, opposite);
+                dead = isDead(coordR);
         }
     }
 
@@ -238,9 +243,9 @@ bool Board::isDead(Coordinate coord,const bool opposite)
             dead = false;
         else if(board[coordL.col][coordL.row]== color)
         {
-            bool haventBeen = (path.end() == std::find(path.begin(), path.end(), coordL));
+            bool haventBeen = (stonesObserved.end() == std::find(stonesObserved.begin(), stonesObserved.end(), coordL));
             if(haventBeen)
-                dead = isDead(coordL, opposite);
+                dead = isDead(coordL);
         }
     }
 
@@ -251,9 +256,9 @@ bool Board::isDead(Coordinate coord,const bool opposite)
             dead = false;
         else if(board[coordD.col][coordD.row]== color)
         {
-            bool haventBeen = (path.end() == std::find(path.begin(), path.end(), coordD));
+            bool haventBeen = (stonesObserved.end() == std::find(stonesObserved.begin(), stonesObserved.end(), coordD));
             if(haventBeen)
-                dead = isDead(coordD, opposite);
+                dead = isDead(coordD);
         }
     }
 
@@ -264,9 +269,9 @@ bool Board::isDead(Coordinate coord,const bool opposite)
             dead = false;
         else if(board[coordU.col][coordU.row]== color)
         {
-            bool haventBeen = (path.end() == std::find(path.begin(), path.end(), coordU));
+            bool haventBeen = (stonesObserved.end() == std::find(stonesObserved.begin(), stonesObserved.end(), coordU));
             if(haventBeen)
-                dead = isDead(coordU, opposite);
+                dead = isDead(coordU);
         }
     }
     return dead;
@@ -281,7 +286,7 @@ bool Board::isDead(Coordinate coord,const bool opposite)
 
 void Board::removeDeadGroup(Coordinate coord)
 {
-    path.push_back(coord);
+    stonesRemoved.push_back(coord);
     Point color = board[coord.col][coord.row];
     if(color == EMPTY) throw GameException("Cannot remove from empty point.");
     board[coord.col][coord.row]= EMPTY;
@@ -291,8 +296,8 @@ void Board::removeDeadGroup(Coordinate coord)
     Coordinate coordR(coord.col +1, coord.row);
     if(isInRange(coordR))
     {
-        //stores wheter we have examined that point before, true if we have not
-        bool haventBeen = (path.end() == std::find(path.begin(), path.end(), coordR));
+        //stores whether we have examined that point before, true if we have not
+        bool haventBeen = (stonesRemoved.end() == std::find(stonesRemoved.begin(), stonesRemoved.end(), coordR));
         if(haventBeen)
             if(board[coordR.col][coordR.row]== color)
                 removeDeadGroup(coordR);
@@ -301,7 +306,7 @@ void Board::removeDeadGroup(Coordinate coord)
     Coordinate coordL(coord.col - 1, coord.row);
     if(isInRange(coordL))
     {
-        bool haventBeen = (path.end()== std::find(path.begin(), path.end(), coordL));
+        bool haventBeen = (stonesRemoved.end()== std::find(stonesRemoved.begin(), stonesRemoved.end(), coordL));
         if(haventBeen)
             if(board[coordL.col][coordL.row]== color)
                 removeDeadGroup(coordL);
@@ -310,7 +315,7 @@ void Board::removeDeadGroup(Coordinate coord)
     Coordinate coordD(coord.col, coord.row + 1);
     if(isInRange(coordD))
     {
-        bool haventBeen = (path.end() == std::find(path.begin(), path.end(), coordD));
+        bool haventBeen = (stonesRemoved.end() == std::find(stonesRemoved.begin(), stonesRemoved.end(), coordD));
         if(haventBeen)
             if(board[coordD.col][coordD.row]== color)
                 removeDeadGroup(coordD);
@@ -319,13 +324,35 @@ void Board::removeDeadGroup(Coordinate coord)
     Coordinate coordU(coord.col, coord.row - 1);
     if(isInRange(coordU))
     {
-        bool haventBeen = (path.end() == std::find(path.begin(), path.end(), coordU));
+        bool haventBeen = (stonesRemoved.end() == std::find(stonesRemoved.begin(), stonesRemoved.end(), coordU));
         if(haventBeen)
             if(board[coordU.col][coordU.row]== color)
                 removeDeadGroup(coordU);
     }
 }
 
+bool Board::compareBoards()
+{
+    bool same = true;
+    int i, j;
+    for(i = 0, j = 0; i < boardSize; i++)
+        for(j = 0; j < boardSize; j++)
+    {
+        if(board[i][j] != prevprevBoard[i][j]) same = false;
+    }
+    return same;
+}
+
+void Board::copyBoards()
+{
+    int i, j;
+    for(i = 0; i < boardSize; i++)
+        for(j = 0; j < boardSize; j++)
+    {
+        prevprevBoard[i][j] = prevBoard[i][j];
+        prevBoard[i][j] = board[i][j];
+    }
+}
 
 
 

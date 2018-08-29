@@ -81,6 +81,7 @@ void BoardTextures::render(const Board& board)
         for(j = 0; j < board.getBoardSize(); j++)
     {
         if(boardPointer[i][j] != EMPTY)
+        {
             dst.x = topLeftCorners[i*board.getBoardSize() + j].col;
             dst.y = topLeftCorners[i*board.getBoardSize() + j].row;
             if(boardPointer[i][j] == BLACK)
@@ -91,24 +92,30 @@ void BoardTextures::render(const Board& board)
             {
                 SDL_RenderCopy(renderer, wStoneTexture, NULL, &dst);
             }
+        }
     }
     //Rendering mouse pointer
     int x, y;
     SDL_GetMouseState(&x, &y);
-    dst.x = x / stoneTexSize * stoneTexSize; // we cut off the part over N*25, to get the top left corner of a square over an intersection
-    dst.y = y / stoneTexSize * stoneTexSize;
-    if(board.getTurn() == BLACK)
+    int col = x / stoneTexSize;
+    int row = y / stoneTexSize;
+    if(board.isInRange(row, col))
+    {
+        dst.x = col * stoneTexSize; // we cut off the part over N*25, to get the top left corner of a square over an intersection
+        dst.y = row * stoneTexSize;
+        if(board.getTurn() == BLACK)
         {
-            SDL_SetTextureAlphaMod(bStoneTexture, 0x80); // make it transparent
+            SDL_SetTextureAlphaMod(bStoneTexture, 0x80); // make it 50% transparent
             SDL_RenderCopy(renderer, bStoneTexture, NULL, &dst);
             SDL_SetTextureAlphaMod(bStoneTexture, 0xFF);
         }
-    else if(board.getTurn() == WHITE)
+        else if(board.getTurn() == WHITE)
         {
             SDL_SetTextureAlphaMod(wStoneTexture, 0x80);
             SDL_RenderCopy(renderer, wStoneTexture, NULL, &dst);
             SDL_SetTextureAlphaMod(wStoneTexture, 0xFF);
         }
+    }
     SDL_RenderPresent(renderer);
 }
 
