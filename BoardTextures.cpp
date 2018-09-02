@@ -67,7 +67,7 @@ BoardTextures::~BoardTextures()
 }
 
 /// \brief Renders textures according to boardposition.
-/// Also, it renders a transparent stone of next player color to where the mouse points
+/// Also, it renders a transparent stone of next player's color to where the mouse points
 ///
 
 void BoardTextures::render(const Board& board)

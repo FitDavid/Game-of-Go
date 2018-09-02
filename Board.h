@@ -3,10 +3,11 @@
 #include "Game.h"
 #include <vector>
 #include <algorithm>
-#include <iostream>
+//#include <iostream>
 
 /// \brief Contains current position on the board in a 2D array. Checks if move is legal and can put stone if so.
 /// \todo making functions const if possible
+///
 
 class Board
 {

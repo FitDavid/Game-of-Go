@@ -1,5 +1,3 @@
-#include "Game.h"
-#include "Board.h"
 #include "Menu.h"
 #include "BoardTextures.h"
 #include <iostream>
