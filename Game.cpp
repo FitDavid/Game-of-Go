@@ -5,7 +5,7 @@ Game* Game::instance = NULL;
 /// \brief Initializes SDL and other extensions.
 ///
 
-Game::Game():winWidth(640), winHeight(480), renderer(NULL), window(NULL)
+Game::Game():winWidth(640), winHeight(475), renderer(NULL), window(NULL)
 {
     if(SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO ) != 0) throw GameException("SDL Initialization failure");
     if(IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) throw GameException("SDL_image initialization failure.");

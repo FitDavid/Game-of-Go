@@ -1,5 +1,5 @@
 /// \file Game.h
-/// \brief Contains Point enumeration Cordinate class and Game singleton
+/// \brief Contains Point enumeration Coordinate class and Game singleton
 ///
 
 #ifndef GAME_H

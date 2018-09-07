@@ -30,7 +30,7 @@ class BoardTextures
         std::vector<Coordinate> topLeftCorners;
         /// This holds the top left corners of the square where the stones need to be rendered.
         /// The top left corner of a square is between intersections.
-        // I tried 2D std::vector but that was two complicated
+        // I tried 2D std::vector but that was too complicated
 };
 
 #endif // BOARDTEXTURES_H

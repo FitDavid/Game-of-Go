@@ -5,7 +5,7 @@
 #include <algorithm>
 //#include <iostream>
 
-/// \brief Contains current position on the board in a 2D array. Checks if move is legal and can put stone if so.
+/// \brief Contains current position on the board in a 2D array. Checks if move is legal and can put a stone if so.
 /// \todo making functions const if possible
 ///
 
@@ -18,6 +18,10 @@ class Board
         ~Board();
 
         void handleEvents(const SDL_Event& event, int stoneTexSize);
+
+        bool loadBoard();
+
+        void newBoard();
 
         bool isInRange(int col, int row = 0) const
             {
@@ -58,9 +62,6 @@ class Board
         }*/
 
     private:
-        bool loadBoard();
-
-        void newBoard();
 
         bool putStone(Coordinate);
 
